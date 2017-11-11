@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+'use strict';
+
+const {Server} = require('http');
+
+const PORT = 4000 || process.env.PORT;
+
+//
+// HELPERS
+//
+function capital(word) {
+  return word.charAt(0).toUpperCase() + word.substring(1);
+};
+
+function fmt(code, text) {
+  return `\x1b[${code}m${text}\x1b[0m`;
+};
+
+const colors  = {
+  black: '30',
+  red: '31',
+  green: '32',
+  yellow: '33',
+  blue: '34',
+  magenta: '35',
+  cyan: '36',
+  grey: '90',
+  white: '97',
+};
+
+Object.keys(colors).forEach(function(color) {
+  fmt[color] = (text) => fmt(colors[color], text);
+});
+
+
+//
+// IMPLEMENTATION
+//
+const server = new Server();
+
+server.listen(PORT, () => console.log(`\nListening on port ${fmt.yellow(PORT)}\n`));
+
+server.on('request', (req, res) => {
+
+  console.log(`${fmt.magenta(req.method)} ${fmt.grey(req.url)} HTTP/${req.httpVersion}`);
+
+  Object.keys(req.headers).forEach(function(header) {
+    console.log(`${fmt.grey(capital(header))}: ${fmt.blue(req.headers[header])}`);
+  });
+
+  console.log();
+
+  let body = [];
+  req
+    .on('data', (ch) => body.push(ch))
+    .on('end', function() {
+
+      body = Buffer.concat(body).toString();
+
+      if (req.headers['content-type'] == 'application/json')  {
+        console.log(JSON.stringify(JSON.parse(body), null, 2));
+      } else {
+        console.log(body);
+      }
+
+      console.log();
+
+      res.writeHead(200);
+      res.end();
+    });
+
+});
