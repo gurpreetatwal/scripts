@@ -3,8 +3,6 @@
 
 const {Server} = require('http');
 
-const PORT = 4000 || process.env.PORT;
-
 //
 // HELPERS
 //
@@ -37,8 +35,22 @@ Object.keys(colors).forEach(function(color) {
 // IMPLEMENTATION
 //
 const server = new Server();
+let tries = 1;
 
-server.listen(PORT, () => console.log(`\nListening on port ${fmt.yellow(PORT)}\n`));
+server.on('listening', function() {
+  const port = this.address().port;
+  console.log(`server listening on port ${fmt.blue(port)}\n`);
+});
+
+server.on('error', function(e) {
+  if (e.code === 'EADDRINUSE' && tries <= 10) {
+    console.log(`${fmt.yellow('warning')}: port ${fmt.yellow(e.port)} is in use, trying ${e.port + 1}`);
+    server.listen(++e.port);
+    tries++;
+  } else {
+    throw e;
+  }
+});
 
 server.on('request', (req, res) => {
 
@@ -70,3 +82,5 @@ server.on('request', (req, res) => {
     });
 
 });
+
+server.listen(4000 || process.env.PORT);
