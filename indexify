@@ -1,0 +1,30 @@
+#!/bin/bash
+
+arg="$1"
+path="$(dirname $0)"
+
+assertify() {
+  sed -i -f $path/assertify.sed $1
+}
+
+if [[ -d "$arg" ]]; then
+  dir="$(readlink -m $arg)"
+
+  if [[ -d "$dir/test" ]]; then
+    dir="$dir/test"
+  fi
+
+  ag --js -L -Q "require('clutch-assert')" "$dir" | xargs sed -i "/'use strict'/{N;N;s|'use strict';\n\n|&const assert = require('clutch-assert');\n|}" 2> /dev/null
+fi
+
+if [[ -z $dir ]]; then
+  assertify $arg
+  exit $?
+fi
+
+files="$(find $dir -type f -name '*.js')"
+
+for file in $files; do
+  echo $file
+  assertify $file
+done
