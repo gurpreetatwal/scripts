@@ -32,8 +32,8 @@ run() {
 ## ARG CHECK
 
 if [[ $# == 0 ]]; then usage; fi
-if [[ $# == 2 ]]; then
-  FILE=$1
+if [[ $# -ge 2 ]]; then
+  FILE="$1"
   COMMAND="${@:2}"
   if [[ ! -e $FILE ]]; then usage; fi
 fi
