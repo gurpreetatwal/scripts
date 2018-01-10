@@ -16,7 +16,7 @@ FILE=${1:-}
 
 ROOT="$(git rev-parse --show-toplevel)"
 
-# If file is not set and try to find it
+# If file is not passed in, try to find it
 if [[ -z "$FILE" ]]; then
   for file in "package.json" "server/package.json"; do
     if [[ -f "$ROOT/$file" ]]; then
@@ -26,22 +26,24 @@ if [[ -z "$FILE" ]]; then
   done
 fi
 
-if [[ -f "$FILE" ]]; then
+FPATH="$ROOT/$FILE"
+
+if [[ ! -f "$FPATH" ]]; then
   if [[ -z "$FILE" ]]; then
     echo "ERROR: could not find package.json file, pass file as first argument"
   else
-    echo "ERROR: $FILE is not a file"
+    echo "ERROR: $PATH is not a file"
   fi
   exit 1
 fi
 
 
-MASTER="$(git show origin/master:$FILE | print_patch)";
-CURRENT="$(cat "$ROOT/$FILE" | print_patch)";
+MASTER="$(git show origin/master:$FILE | print_patch)"
+CURRENT="$(cat "$FPATH" | print_patch)"
 
 git fetch origin master
 if [[ $MASTER -ge $CURRENT ]]; then
-  perl -i -pe 's/(version": "(\d+\.)*)(\d+)(.*)/$1.($3+1).$4/e' "$ROOT/$FILE"
-  git commit "$ROOT/$FILE" --no-verify -m "bump version" > /dev/null
+  perl -i -pe 's/(version": "(\d+\.)*)(\d+)(.*)/$1.($3+1).$4/e' "$FPATH"
+  git commit "$FPATH" --no-verify -m "bump version" > /dev/null
   echo "bumped and commited patch version"
 fi
