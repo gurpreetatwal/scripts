@@ -12,7 +12,7 @@ print_patch() {
 }
 
 # The file that contains the version number
-FILE=${FILE:-}
+FILE=${1:-}
 
 ROOT="$(git rev-parse --show-toplevel)"
 
@@ -27,7 +27,11 @@ if [[ -z "$FILE" ]]; then
 fi
 
 if [[ -f "$FILE" ]]; then
-  echo "could not find package.json file, please check/set FILE variable"
+  if [[ -z "$FILE" ]]; then
+    echo "ERROR: could not find package.json file, pass file as first argument"
+  else
+    echo "ERROR: $FILE is not a file"
+  fi
   exit 1
 fi
 
