@@ -40,11 +40,11 @@ fi
 
 ## MAIN
 
-# Run command once to ensure validity
-if ! run; then exit $?; fi
+# Run command
+run || true
 
 # Loop
 while true; do
   inotifywait -qr --event modify --format "$(print $FORMAT)" $FILE
-  run
+  run || true
 done
