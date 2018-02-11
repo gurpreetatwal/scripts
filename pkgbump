@@ -32,7 +32,7 @@ if [[ ! -f "$FPATH" ]]; then
   if [[ -z "$FILE" ]]; then
     echo "ERROR: could not find package.json file, pass file as first argument"
   else
-    echo "ERROR: $PATH is not a file"
+    echo "ERROR: $FPATH is not a file"
   fi
   exit 1
 fi
