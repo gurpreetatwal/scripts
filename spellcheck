@@ -1,0 +1,43 @@
+#!/bin/bash
+
+
+center() {
+  echo $1 | awk '{ z = '$(tput cols)' - length; y = int(z / 2); x = z - y; printf "%*s%s%*s\n", x, "", $0, y, ""; }'
+}
+
+setformat() {
+  printf "\e[$1m"
+}
+
+clear() {
+  printf "\e[0m"
+}
+
+printft() {
+  echo -e "\e[$1m$2\e[0m"
+}
+
+fill() {
+  head -c $(tput cols) < /dev/zero | tr '\0' ' '
+}
+
+if [[ -z $1 ]]; then
+  echo
+  printft "1;41" "Please provide the name of the directory to check   "
+  echo
+  exit 1
+fi
+
+setformat "1;106"
+fill
+center "Spell checking files in $1"
+fill
+clear
+
+for file in $(find $1 -type f -not -path '*.git*'); do
+
+  printft "1;92" $file
+  cat $file | aspell list --ignore-case --run-together --run-together-min=2 --personal ~/scripts/words | sort | uniq
+  echo
+
+done;
