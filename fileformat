@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+ag '.*' -l | while read file; do
+
+  if $(diff /dev/null "$file" | tail -1 | grep '^\\ No newline' > /dev/null); then
+    echo -e "no trailing newline\t$file"
+    echo >> "$file"
+  fi
+
+  if $(file "$file" | grep 'CRLF' > /dev/null); then
+    echo -e "crlf\t\t$file"
+    dos2unix "$file" > /dev/null 2>&1
+  fi
+
+  if $(grep -P '\s+$' "${file}" > /dev/null); then
+    echo "trailing space $file"
+    sed -i 's/\s*$//' "$file"
+  fi
+
+done
