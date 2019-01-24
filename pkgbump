@@ -37,11 +37,11 @@ if [[ ! -f "$FPATH" ]]; then
   exit 1
 fi
 
+git fetch origin master
 
 MASTER="$(git show origin/master:$FILE | print_patch)"
 CURRENT="$(cat "$FPATH" | print_patch)"
 
-git fetch origin master
 if [[ $MASTER -ge $CURRENT ]]; then
   perl -i -pe 's/(version": "(\d+\.)*)(\d+)(.*)/$1.($3+1).$4/e' "$FPATH"
   git commit "$FPATH" --no-verify -m "bump version" > /dev/null
