@@ -8,7 +8,7 @@ set -o nounset
 set -o errexit
 
 print_patch() {
-  awk -F '.' '/version/{print $3+0}'
+  awk -F '.' '/"version":/{print $3+0}'
 }
 
 # The file that contains the version number
