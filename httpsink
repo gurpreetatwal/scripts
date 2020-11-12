@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-"use strict";
+'use strict';
 
-const { Server } = require("http");
+const { Server } = require('http');
 
 //
 // HELPERS
@@ -15,18 +15,18 @@ function fmt(code, text) {
 }
 
 const colors = {
-  black: "30",
-  red: "31",
-  green: "32",
-  yellow: "33",
-  blue: "34",
-  magenta: "35",
-  cyan: "36",
-  grey: "90",
-  white: "97"
+  black: '30',
+  red: '31',
+  green: '32',
+  yellow: '33',
+  blue: '34',
+  magenta: '35',
+  cyan: '36',
+  grey: '90',
+  white: '97',
 };
 
-Object.keys(colors).forEach(function(color) {
+Object.keys(colors).forEach(function (color) {
   fmt[color] = text => fmt(colors[color], text);
 });
 
@@ -36,17 +36,17 @@ Object.keys(colors).forEach(function(color) {
 const server = new Server();
 let tries = 1;
 
-server.on("listening", function() {
+server.on('listening', function () {
   const port = this.address().port;
   console.log(`server listening on port ${fmt.blue(port)}\n`);
 });
 
-server.on("error", function(e) {
-  if (e.code === "EADDRINUSE" && tries <= 10) {
+server.on('error', function (e) {
+  if (e.code === 'EADDRINUSE' && tries <= 10) {
     console.log(
-      `${fmt.yellow("warning")}: port ${fmt.yellow(
-        e.port
-      )} is in use, trying ${e.port + 1}`
+      `${fmt.yellow('warning')}: port ${fmt.yellow(e.port)} is in use, trying ${
+        e.port + 1
+      }`
     );
     server.listen(++e.port);
     tries++;
@@ -55,12 +55,12 @@ server.on("error", function(e) {
   }
 });
 
-server.on("request", (req, res) => {
+server.on('request', (req, res) => {
   console.log(
     `${fmt.magenta(req.method)} ${fmt.grey(req.url)} HTTP/${req.httpVersion}`
   );
 
-  Object.keys(req.headers).forEach(function(header) {
+  Object.keys(req.headers).forEach(function (header) {
     console.log(
       `${fmt.grey(capital(header))}: ${fmt.blue(req.headers[header])}`
     );
@@ -70,11 +70,11 @@ server.on("request", (req, res) => {
 
   let body = [];
   req
-    .on("data", ch => body.push(ch))
-    .on("end", function() {
+    .on('data', ch => body.push(ch))
+    .on('end', function () {
       body = Buffer.concat(body).toString();
 
-      if (req.headers["content-type"] == "application/json") {
+      if (req.headers['content-type'] == 'application/json') {
         console.log(JSON.stringify(JSON.parse(body), null, 2));
       } else {
         console.log(body);
@@ -82,18 +82,16 @@ server.on("request", (req, res) => {
 
       console.log();
 
-      if (req.method === "OPTIONS") {
-        res.setHeader("Access-Control-Allow-Origin", "*");
+      if (req.method === 'OPTIONS') {
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader(
-          "Access-Control-Allow-Headers",
-          "Origin, X-Requested-With, Content-Type, Accept"
+          'Access-Control-Allow-Headers',
+          'Origin, X-Requested-With, Content-Type, Accept'
         );
       }
 
-      setTimeout(() => {
-        res.writeHead(200);
-        res.end();
-      }, 65000);
+      res.writeHead(200);
+      res.end();
     });
 });
 
