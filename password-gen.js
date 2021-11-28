@@ -3,8 +3,10 @@
 const crypto = require('crypto');
 
 const length = 60;
+const specialchars = '`~!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?';
 const set =
-  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!&#$^<>-';
+  'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' +
+  specialchars;
 
 let password = '';
 for (let i = 0; i < length; i++) {
